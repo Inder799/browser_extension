@@ -2,12 +2,14 @@ import "./Task.css";
 import { useBrowser } from "../../context/browser-context";
 import { Fragment, useEffect, useState } from "react";
 import { quotes } from "../../db/quotes";
+import { Todo } from "../../components/Todo/Todo";
 
 const index = Math.floor(Math.random() * quotes.length);
 const quote = quotes[index].quote;
 
 export const Task = () => {
   const [isChecked, setIsChecked] = useState(false);
+  const [isTodoOpen, setIsTodoOpen] = useState(false);
 
   const { name, time, message, task, browserDispatch } = useBrowser();
 
@@ -17,6 +19,11 @@ export const Task = () => {
       type: "TASK",
       payload: userTask,
     });
+    if (new Date().getDate() !== Number(localStorage.getItem("date"))) {
+      localStorage.removeItem("date");
+      localStorage.removeItem("task");
+      localStorage.removeItem("checkedStatus");
+    }
   }, []);
 
   useEffect(() => {
@@ -62,7 +69,7 @@ export const Task = () => {
         payload: event.target.value,
       });
       localStorage.setItem("task", event.target.value);
-      localStorage.setItem("date", new Date().toDateString());
+      localStorage.setItem("date", new Date().getDate());
     }
   };
 
@@ -80,8 +87,12 @@ export const Task = () => {
     localStorage.removeItem("checkedStatus");
   };
 
+  const handleTodoClick = () => {
+    setIsTodoOpen((isTodoOpen) => !isTodoOpen);
+  };
+
   return (
-    <div className="task-container d-flex direction-column align-center">
+    <div className="task-container d-flex direction-column align-center relative">
       <span className="time">{time}</span>
       <span className="message">
         {message}, {name}
@@ -126,6 +137,12 @@ export const Task = () => {
       )}
       <div className="quote-container">
         <span className="heading-3">{quote}</span>
+      </div>
+      {isTodoOpen && <Todo />}
+      <div className="todo-btn-container absolute">
+        <button className="button cursor todo-btn" onClick={handleTodoClick}>
+          Todo
+        </button>
       </div>
     </div>
   );
