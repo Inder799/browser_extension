@@ -65,3 +65,11 @@
 .gap {
   gap: 1.25rem;
 }
+
+.absolute {
+  position: absolute;
+}
+
+.relative {
+  position: relative;
+}
